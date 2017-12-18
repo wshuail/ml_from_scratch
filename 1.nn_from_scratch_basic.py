@@ -15,7 +15,7 @@ y = np.random.rand(num_examples, n_outputs)
 
 
 w = np.random.rand(n_inputs, n_outputs)
-b = np.random.rand(n_outputs)
+b = np.random.rand(1, n_outputs)
 
 
 def sigmoid_prime(z):
@@ -31,7 +31,7 @@ for i in range(100):
 
     delta3 = -(y-a)*sigmoid_prime(z)  # (nx, no)*(nx, no) ==> (nx, no)
     dw = np.dot(x.T, delta3)  # (nx, ni).T DOT (nx, no) ==> (ni, no) same with w
-    db = np.sum(delta3, axis=0)  # (no,)
+    db = np.sum(delta3, axis=0, keepdims=True)  # (no,)
 
     w -= lr*dw
     b -= lr*db

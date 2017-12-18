@@ -16,10 +16,10 @@ y = np.random.rand(num_examples, n_outputs)
 
 
 w1 = np.random.rand(n_inputs, n_hidden)
-b1 = np.random.rand(n_hidden)
+b1 = np.random.rand(1, n_hidden)
 
 w2 = np.random.rand(n_hidden, n_outputs)
-b2 = np.random.rand(n_outputs)
+b2 = np.random.rand(1, n_outputs)
 
 
 def sigmoid_prime(z):
@@ -38,11 +38,11 @@ for i in range(100):
 
     delta2 = -(y-a2)*sigmoid_prime(z2)  # (nx, no)*(nx, no) ==> (nx, no)
     dw2 = np.dot(a1.T, delta2)  # (nh, nx) DOT (nx, no) ==> (nh, no)  same with w2
-    db2 = np.sum(delta2, axis=0)  # (nx, no) ==> (no,) same with b2
+    db2 = np.sum(delta2, axis=0, keepdims=True)  # (nx, no) ==> (1, no) same with b2
 
     delta1 = np.dot(delta2, w2.T)*sigmoid_prime(z1)  # ((nx, no) DOT (nh, no).T) * (nx, nh) ==> (nx, nh)
     dw1 = np.dot(x.T, delta1)  # (ni, nx) DOT (nx, nh) ==> (ni, nh)  same with w1
-    db1 = np.sum(delta1, axis=0)  # (nx, nh) ==> (nh,) same with b2
+    db1 = np.sum(delta1, axis=0, keepdims=True)  # (nx, nh) ==> (1, nh) same with b2
 
     w2 -= lr*dw2
     b2 -= lr*db2
