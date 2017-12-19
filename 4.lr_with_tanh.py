@@ -8,39 +8,35 @@ import numpy as np
 num_examples = 10  # abbreviate by 'ne' in comments, same below
 n_inputs = 5  # ni
 n_outputs = 1  # no
-lr = 0.03
+lr = 0.3
 
 x = np.linspace(-10, 10, num_examples*n_inputs).astype(np.float32).reshape(-1, n_inputs)
-y = np.random.rand(num_examples, n_outputs)
+y = np.random.normal(loc=0, scale=1, size=(num_examples, n_outputs))
 
 
 w = np.random.rand(n_inputs, n_outputs)
 b = np.random.rand(1, n_outputs)
 
 
-def sigmoid_prime(z):
-    # Derivative of sigmoid function
-    return np.exp(-z)/((1+np.exp(-z))**2)
+def tanh_prime(z):
+    return 1 - np.square(z)
 
 
-for epoch in range(100):
+for i in range(100):
     z = np.dot(x, w) + b  # (nx, no)
-    a = 1/(1 + np.exp(-z))  # (nx, no)
+    a = np.tanh(z)
 
     loss = np.sum((a - y)**2)/2
 
-    delta3 = -(y-a)*sigmoid_prime(a)  # (nx, no)*(nx, no) ==> (nx, no)
+    delta3 = -(y-a)*tanh_prime(a)  # (nx, no)*(nx, no) ==> (nx, no)
     dw = np.dot(x.T, delta3)/num_examples  # (nx, ni).T DOT (nx, no) ==> (ni, no) same with w
     db = np.sum(delta3, axis=0, keepdims=True)/num_examples  # (no,)
 
     w -= lr*dw
     b -= lr*db
 
-    if epoch % 10 == 0:
-        print('epoch %d loss %s.' % (epoch, loss))
-
-
-
+    if i % 10 == 0:
+        print('epoch %d loss %s.' % (i, loss))
 
 
 
