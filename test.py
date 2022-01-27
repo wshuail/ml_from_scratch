@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 from decision_tree import RegressionTree, ClassificationTree
 from gradient_boosting import GradientBoostingClassifier, GradientBoostingRegression
+from random_forest import RandomForestClassifier, RandomForestRegression
 from utils import split_train_test, cal_accuracy, mean_squared_error
 from utils import standardize
 
@@ -19,8 +20,25 @@ def parse_args():
     return args
 
 
+models = {
+        'decision_tree_classification': ClassificationTree,
+        'gradient_boosting_classification': GradientBoostingClassifier,
+        'random_forest_classification': RandomForestClassifier,
+        'dtc': ClassificationTree,
+        'gbc': GradientBoostingClassifier,
+        'rfc': RandomForestClassifier,
+        'decision_tree_regression': RegressionTree,
+        'gradient_boosting_regression': GradientBoostingRegression,
+        'random_forest_regression': RandomForestRegression,
+        'dtr': RegressionTree,
+        'gbr': GradientBoostingRegression,
+        'rfr': RandomForestRegression
+        }
 
-def test_decision_tree_regression(gradient_boosting=True):
+
+def test_regression(model):
+
+    Regression = models[model]
 
     print ("-- Regression Tree --")
 
@@ -36,10 +54,7 @@ def test_decision_tree_regression(gradient_boosting=True):
 
     X_train, y_train, X_test, y_test = split_train_test(X, y)
 
-    if gradient_boosting:
-        model = GradientBoostingRegression()
-    else:
-        model = RegressionTree()
+    model = Regression()
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
 
@@ -65,14 +80,18 @@ def test_decision_tree_regression(gradient_boosting=True):
     plt.show()
 
 
-def test_decision_tree_classification():
+
+def test_classification(model):
+
+    Classifier = models[model]
+
     dataset = datasets.load_iris()
     X, y = dataset.data, dataset.target
     print (X.shape, y.shape)
     train_X, train_y, test_X, test_y = split_train_test(X, y)
     print (train_X.shape, train_y.shape, test_X.shape, test_y.shape)
 
-    clf = ClassificationTree()
+    clf = Classifier()
     clf.fit(train_X, train_y)
     preds = clf.predict(test_X)
     accuracy = cal_accuracy(test_y, preds)
@@ -93,14 +112,31 @@ def test_gradient_boosting_classification():
     print ('accuracy: ', accuracy)
 
 
+def test_rf_classification():
+    iris = datasets.load_iris()
+    X, y = iris.data, iris.target
+    print (X.shape, y.shape)
+    train_X, train_y, test_X, test_y = split_train_test(X, y)
+    print (train_X.shape, train_y.shape, test_X.shape, test_y.shape)
+
+    clf = RandomForestClassifier(n_estimators=100)
+    clf.fit(train_X, train_y)
+    preds = clf.predict(test_X)
+    accuracy = cal_accuracy(test_y, preds)
+    print ('accuracy: ', accuracy)
+
+
+"""
 models = {
         'decision_tree_regression': test_decision_tree_regression,
         'decision_tree_classification': test_decision_tree_classification,
         'gradient_boosting_classification': test_gradient_boosting_classification,
         'dtr': test_decision_tree_regression,
         'dtc': test_decision_tree_classification,
-        'gbc': test_gradient_boosting_classification
+        'gbc': test_gradient_boosting_classification,
+        'rf': test_rf_classification
         }
+"""
 
 
 
@@ -110,7 +146,10 @@ models = {
 if __name__ == '__main__':
     args = parse_args()
     model = args.model
-    models[model]()
+    if model.endswith('c') or model.endswith('classification'):
+        test_classification(model)
+    else:
+        test_regression(model)
 
 
 

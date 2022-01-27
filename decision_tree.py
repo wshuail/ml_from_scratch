@@ -23,6 +23,8 @@ class DecisionTree(object):
         self.min_split_samples = min_split_samples
         self.min_impurity = min_impurity
 
+        self.feat_indices = None
+
     def fit(self, X, y):
         self.root = self._build_tree(X, y, depth=0)
         return self.root
